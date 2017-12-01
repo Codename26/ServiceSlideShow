@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.File;
@@ -49,7 +50,14 @@ public class SlideService extends Service {
         return Uri.parse(new File(imageUris[nextImageIndex]).toString());
     }
     public Uri getPrevImage(){
-        Log.d("prev index", String.valueOf(prev));
+        current = prev;
         return Uri.parse(new File(imageUris[prev]).toString());
+    }
+
+    private void sendMessage() {
+        Intent intent = new Intent("custom-event-name");
+        // You can also include some extra data.
+        intent.putExtra("message", "This is my message!");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

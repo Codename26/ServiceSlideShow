@@ -1,12 +1,15 @@
 package com.codename26.serviceslideshow;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
@@ -19,6 +22,8 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
     public static final String IMAGE_URI = "IMAGE_URI";
+    public static final String SLIDE_SHOW_RECEIVER = "SLIDE_SHOW_RECEIVER";
+    public
     private Button btnPrev;
     private Button btnNext;
     private Button btnSlideShow;
@@ -34,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initButtons();
-        //test
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(MainActivity.SLIDE_SHOW_RECEIVER));
+
     }
 
     @Override
@@ -52,6 +58,20 @@ public class MainActivity extends AppCompatActivity {
             mBound = false;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Uri mUri = intent.getParcelableExtra(MainActivity.IMAGE_URI);
+            mImageView.setImageURI(mUri);
+        }
+    };
 
     private void initButtons() {
         btnPrev = findViewById(R.id.buttonPrev);
@@ -100,4 +120,5 @@ public class MainActivity extends AppCompatActivity {
             mBound = false;
         }
     };
+
 }
