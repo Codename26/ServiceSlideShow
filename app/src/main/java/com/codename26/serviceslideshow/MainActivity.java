@@ -23,7 +23,7 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
     public static final String IMAGE_URI = "IMAGE_URI";
     public static final String SLIDE_SHOW_RECEIVER = "SLIDE_SHOW_RECEIVER";
-    public
+    public static final String ACTION_SLIDESHOW = "ACTION_SLIDESHOW";
     private Button btnPrev;
     private Button btnNext;
     private Button btnSlideShow;
@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
         btnSlideShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mBound){
+                    mService.startSlideShow();
+                }
 
 
             }

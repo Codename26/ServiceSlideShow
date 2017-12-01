@@ -11,6 +11,8 @@ import android.util.Log;
 import java.io.File;
 import java.net.URI;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SlideService extends Service {
     private final IBinder mBinder = new LocalBinder();
@@ -18,6 +20,8 @@ public class SlideService extends Service {
             "/sdcard/Download/4.png", "/sdcard/Download/5.png"};
     private int current = 0;
     private int prev = 0;
+    private Timer mTimer;
+    private MyTimerTask mTimerTask;
     public SlideService() {
     }
 
@@ -54,10 +58,30 @@ public class SlideService extends Service {
         return Uri.parse(new File(imageUris[prev]).toString());
     }
 
-    private void sendMessage() {
-        Intent intent = new Intent("custom-event-name");
+    public void startSlideShow(){
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
+        mTimer = new Timer();
+        mTimerTask = new MyTimerTask();
+        mTimer.schedule(mTimerTask, 1000, 1000);
+    }
+
+    class MyTimerTask extends TimerTask{
+        @Override
+        public void run() {
+            int i = current;
+            while (i == current){
+                i = new Random().nextInt(5);
+            }
+            sendMessage(i);
+        }
+    }
+
+    private void sendMessage(int i) {
+        Intent intent = new Intent(MainActivity.ACTION_SLIDESHOW);
         // You can also include some extra data.
-        intent.putExtra("message", "This is my message!");
+        intent.putExtra(MainActivity.IMAGE_URI, Uri.parse(new File(imageUris[i]).toString()));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }
