@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ServiceSlideShow.iml" filepath="$PROJECT_DIR$/.idea/ServiceSlideShow.iml" />
-      <module fileurl="file://C:\Git\ServiceSlideShow\ServiceSlideShow.iml" filepath="C:\Git\ServiceSlideShow\ServiceSlideShow.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Git\ServiceSlideShow\app\app.iml" filepath="C:\Git\ServiceSlideShow\app\app.iml" />
     </modules>
   </component>
 </project>

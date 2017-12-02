@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d("Broadcast Receiver", "Received Message");
             Uri mUri = intent.getParcelableExtra(MainActivity.IMAGE_URI);
             mImageView.setImageURI(mUri);
         }
@@ -124,4 +126,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+    }
 }

@@ -16,12 +16,12 @@ import java.util.TimerTask;
 
 public class SlideService extends Service {
     private final IBinder mBinder = new LocalBinder();
-    private String[] imageUris = {"/sdcard/Download/1.png", "/sdcard/Download/2.png","/sdcard/Download/3.png",
-            "/sdcard/Download/4.png", "/sdcard/Download/5.png"};
+    private int[] imageArr = {R.drawable.i1, R.drawable.i2, R.drawable.i3, R.drawable.i4, R.drawable.i5};
     private int current = 0;
     private int prev = 0;
     private Timer mTimer;
     private MyTimerTask mTimerTask;
+    private boolean slideShowIsActive = false;
     public SlideService() {
     }
 
@@ -30,6 +30,11 @@ public class SlideService extends Service {
         return mBinder;
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+      super.onDestroy();
+      return true;
+    }
 
     @Override
     public void onDestroy() {
@@ -51,20 +56,26 @@ public class SlideService extends Service {
         }
         prev = current;
         current = nextImageIndex;
-        return Uri.parse(new File(imageUris[nextImageIndex]).toString());
+        return Uri.parse("android.resource://com.codename26.serviceslideshow/" + imageArr[current]);
     }
     public Uri getPrevImage(){
         current = prev;
-        return Uri.parse(new File(imageUris[prev]).toString());
+        return Uri.parse("android.resource://com.codename26.serviceslideshow/" + imageArr[prev]);
     }
 
     public void startSlideShow(){
         if (mTimer != null) {
             mTimer.cancel();
         }
-        mTimer = new Timer();
-        mTimerTask = new MyTimerTask();
-        mTimer.schedule(mTimerTask, 1000, 1000);
+        if (slideShowIsActive){
+            mTimer.cancel();
+            slideShowIsActive = false;
+        } else {
+            mTimer = new Timer();
+            mTimerTask = new MyTimerTask();
+            mTimer.schedule(mTimerTask, 1000, 1000);
+            slideShowIsActive = true;
+        }
     }
 
     class MyTimerTask extends TimerTask{
@@ -74,14 +85,15 @@ public class SlideService extends Service {
             while (i == current){
                 i = new Random().nextInt(5);
             }
+            Log.d("timer", "Timertask i = " + i);
             sendMessage(i);
         }
     }
 
     private void sendMessage(int i) {
-        Intent intent = new Intent(MainActivity.ACTION_SLIDESHOW);
+        Intent intent = new Intent(MainActivity.SLIDE_SHOW_RECEIVER);
         // You can also include some extra data.
-        intent.putExtra(MainActivity.IMAGE_URI, Uri.parse(new File(imageUris[i]).toString()));
+        intent.putExtra(MainActivity.IMAGE_URI, Uri.parse("android.resource://com.codename26.serviceslideshow/" + imageArr[i]));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }
