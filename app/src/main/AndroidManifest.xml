@@ -21,8 +21,6 @@
             android:name=".SlideService"
             android:enabled="true"
             android:exported="false"></service>
-
-        <receiver android:name=".MainActivity"/>
     </application>
 
 </manifest>

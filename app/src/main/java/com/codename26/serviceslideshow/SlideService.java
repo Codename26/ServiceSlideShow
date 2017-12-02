@@ -2,8 +2,10 @@ package com.codename26.serviceslideshow;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -27,19 +29,25 @@ public class SlideService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d("Bind_Status", "Service Binded");
         return mBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-      super.onDestroy();
-      return true;
+        Log.d("Bind_Status", "Service Unbinded");
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("Service Status", "Service Stopped");
+        Log.d("Service_Status", "Service Stopped");
+        Log.d("Timer_Status", "Timer status onDestroy" + mTimer);
     }
 
     public class LocalBinder extends Binder{
@@ -49,7 +57,6 @@ public class SlideService extends Service {
     }
 
     public Uri getNextImage(){
-        Log.d("current index", String.valueOf(current));
         int nextImageIndex = current;
         while (nextImageIndex == current){
             nextImageIndex = new Random().nextInt(5);
@@ -68,13 +75,16 @@ public class SlideService extends Service {
             mTimer.cancel();
         }
         if (slideShowIsActive){
-            mTimer.cancel();
+            mTimer.purge();
+            mTimer = null;
             slideShowIsActive = false;
+            Log.d("Timer_Status", "timer stopped");
         } else {
             mTimer = new Timer();
             mTimerTask = new MyTimerTask();
-            mTimer.schedule(mTimerTask, 1000, 1000);
             slideShowIsActive = true;
+            Log.d("Timer_Status", "timer started " + slideShowIsActive);
+            mTimer.schedule(mTimerTask, 1000, 1000);
         }
     }
 
@@ -86,6 +96,7 @@ public class SlideService extends Service {
                 i = new Random().nextInt(5);
             }
             Log.d("timer", "Timertask i = " + i);
+            current = i;
             sendMessage(i);
         }
     }
@@ -95,5 +106,17 @@ public class SlideService extends Service {
         // You can also include some extra data.
         intent.putExtra(MainActivity.IMAGE_URI, Uri.parse("android.resource://com.codename26.serviceslideshow/" + imageArr[i]));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+
+    public void stopSlideShow() {
+        if (slideShowIsActive){
+            if (mTimer != null){
+                mTimer.cancel();
+                mTimer = null;
+                slideShowIsActive = false;
+                Log.d("Timer_Status", "timer stopped");
+            }
+        }
     }
 }
